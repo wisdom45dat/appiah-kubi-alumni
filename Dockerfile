@@ -8,10 +8,11 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libzip-dev
+    libzip-dev \
+    sqlite3
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip pdo_sqlite
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -22,11 +23,30 @@ COPY . /var/www/html
 # Set working directory
 WORKDIR /var/www/html
 
+# Copy production environment file
+COPY .env.production /var/www/html/.env
+
+# Create SQLite database
+RUN touch /var/www/html/database/database.sqlite
+RUN chmod 666 /var/www/html/database/database.sqlite
+
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Set permissions
 RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache
+
+# Generate application key (if not set)
+RUN php artisan key:generate --force
+
+# Cache configuration
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
+
+# Run database migrations
+RUN php artisan migrate --force
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
