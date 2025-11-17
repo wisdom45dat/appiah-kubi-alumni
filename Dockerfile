@@ -8,10 +8,14 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     sqlite3 \
-    libsqlite3-dev
+    libsqlite3-dev \
+    curl
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_sqlite mbstring gd
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
@@ -25,6 +29,9 @@ WORKDIR /var/www/html
 
 # Copy application files
 COPY . .
+
+# Install Composer dependencies
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Create database file
 RUN mkdir -p database && touch database/database.sqlite
