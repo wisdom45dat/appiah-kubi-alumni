@@ -36,6 +36,14 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Create database file
 RUN mkdir -p database && touch database/database.sqlite
 
+# FIX FOR SESSION ISSUE:
+RUN mkdir -p storage/framework/sessions
+RUN chmod -R 775 storage/framework/sessions
+RUN chown -R www-data:www-data storage/framework/sessions
+
+# Generate app key
+RUN php artisan key:generate --force
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 storage bootstrap/cache
