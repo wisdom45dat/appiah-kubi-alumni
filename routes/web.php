@@ -1,5 +1,12 @@
 <?php
 
+use Illuminate\Support\Facades\URL;
+
+// Force HTTPS in production
+if (env('APP_ENV') === 'production') {
+    URL::forceScheme('https');
+}
+
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GalleryController;
