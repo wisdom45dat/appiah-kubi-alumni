@@ -41,9 +41,6 @@ RUN mkdir -p storage/framework/sessions
 RUN chmod -R 775 storage/framework/sessions
 RUN chown -R www-data:www-data storage/framework/sessions
 
-# Generate app key
-RUN php artisan key:generate --force
-
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 storage bootstrap/cache
