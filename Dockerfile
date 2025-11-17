@@ -41,8 +41,8 @@ RUN sqlite3 database/database.sqlite "CREATE TABLE IF NOT EXISTS users (id INTEG
 RUN sqlite3 database/database.sqlite "CREATE TABLE IF NOT EXISTS password_resets (email VARCHAR(255) NOT NULL, token VARCHAR(255) NOT NULL, created_at DATETIME NULL);"
 RUN sqlite3 database/database.sqlite "CREATE TABLE IF NOT EXISTS sessions (id VARCHAR(255) PRIMARY KEY, user_id INTEGER NULL, ip_address VARCHAR(45) NULL, user_agent TEXT NULL, payload TEXT NOT NULL, last_activity INTEGER NOT NULL);"
 
-# CREATE DEMO USER (Password: admin123)
-RUN sqlite3 database/database.sqlite "INSERT OR IGNORE INTO users (name, email, password, created_at, updated_at) VALUES ('Admin User', 'admin@appiahkubi.edu.gh', '\$2y\$12\$QjSH496pcT5CEbzHR6/rLuMSs93HpfZq6xE2.8Fn.9qNL7oXlJx.m', datetime('now'), datetime('now'));"
+# CREATE DEMO USER USING LARAVEL
+RUN php artisan tinker --execute="\App\Models\User::create(['name' => 'Admin User', 'email' => 'admin@appiahkubi.edu.gh', 'password' => bcrypt('admin123')]);" || true
 
 # FIX FOR SESSION ISSUE:
 RUN mkdir -p storage/framework/sessions
