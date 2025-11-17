@@ -40,7 +40,8 @@ RUN mkdir -p database && touch database/database.sqlite
 RUN mkdir -p storage/framework/sessions
 RUN chmod -R 775 storage/framework/sessions
 RUN chown -R www-data:www-data storage/framework/sessions
-
+# Add this line after creating the database file
+RUN php artisan migrate --force
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 storage bootstrap/cache
